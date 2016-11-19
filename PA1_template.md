@@ -1,14 +1,10 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 ###Load the data and transform to suit needs
-```{r dataLoad, echo = TRUE, warning = FALSE}
+
+```r
 #Assumes download of the zip file from course assignment to working directory
 #Store the path to the wd data folder
 files <- file.path(getwd(),"data/")
@@ -30,7 +26,8 @@ data$date <- as.Date(data$date, format = "%Y-%m-%d")
 
 ## What is mean total number of steps taken per day?
 ###Create the histogram for total steps per day
-```{r histsteps, echo = TRUE, warning = FALSE, results = "asis"}
+
+```r
 #Summarize the steps for each day by the sum of steps per day
 dataSum <- aggregate(steps ~ date, data, sum, na.rm = TRUE)
 
@@ -48,18 +45,22 @@ axis(side = 1, at = axTicks(1), labels = format(axTicks(1), big.mark = ","))
 axis(side = 2, at = axTicks(2), labels = format(axTicks(2), big.mark = ","))
 ```
 
+![](PA1_template_files/figure-html/histsteps-1.png) 
+
 ###Calculate the mean and median of the total steps per day
-```{r meanmedian, echo = TRUE, warning = FALSE, results = "hide"}
+
+```r
 stepMean <- round(mean(dataSum$steps, na.rm = TRUE), 2)
 stepMedian <- round(median(dataSum$steps, na.rm = TRUE), 2)
 ```
-The mean of the total steps per day is `r stepMean`.  
-The median of the total steps per day is `r stepMedian`.
+The mean of the total steps per day is 1.076619\times 10^{4}.  
+The median of the total steps per day is 1.0765\times 10^{4}.
 
 
 ## What is the average daily activity pattern?
 ###Create line chart for average steps per interval
-```{r activity, echo = TRUE, warning = FALSE}
+
+```r
 #Summarize the steps per interval by the average of steps per interval
 dataInv <- aggregate(steps ~ interval, data, mean, na.rm = TRUE)
 #Store the max steps per day to label the abline
@@ -78,20 +79,24 @@ points(abx, aby,  pch = 19, col = "red")
 text(abx - 70, aby - 10, aby, col = "red")
 ```
 
-The 5-Minute interval with the maximum number of steps is: Interval `r abx`.
+![](PA1_template_files/figure-html/activity-1.png) 
+
+The 5-Minute interval with the maximum number of steps is: Interval 835.
 
 
 
 ## Imputing missing values
 ##Imputing missing values
-```{r missingvalues, echo = TRUE, warning = FALSE}
+
+```r
 #Store the count of missing values 
 dataNA <- nrow(subset(data, is.na(data$steps) | is.na(data$date) | is.na(data$interval)))
 ```
-The total number of rows in the data with missing values is: `r dataNA`.
+The total number of rows in the data with missing values is: 2304.
 
 ###Replacing the NAs in a copy of the data set
-```{r replace na, echo = TRUE, warning = FALSE}
+
+```r
 #Copy original data for na replacement
 dataAll <- data
 #Summarize original data by average steps per day
@@ -105,7 +110,8 @@ dataSum1 <- aggregate(steps ~ date, dataAll, sum, na.rm = TRUE)
 ```
 
 ###Make a histogram of the total number of steps taken each day 
-```{r histNA, echo = TRUE, warning = FALSE}
+
+```r
 #Set the global parameter options for the plot output
 par(mfrow = c(1, 1), mar = c(5, 4, 2, 1), las = 1)
 
@@ -119,22 +125,26 @@ axis(side = 1, at = axTicks(1), labels = format(axTicks(1), big.mark = ","))
 axis(side = 2, at = axTicks(2), labels = format(axTicks(2), big.mark = ","))
 ```
 
+![](PA1_template_files/figure-html/histNA-1.png) 
+
 ###Calculate the mean and median of the total steps per day for the adjusted data
-```{r meanmedianNA, echo = TRUE, warning = FALSE, results = "hide"}
+
+```r
 stepMean1 <- round(mean(dataSum1$steps), 2)
 stepMedian1 <- round(median(dataSum1$steps), 2)
 ```
-The mean of the total steps per day is `r stepMean1`.  
-The median of the total steps per dat is `r stepMedian1`.
+The mean of the total steps per day is 1.076817\times 10^{4}.  
+The median of the total steps per dat is 1.078918\times 10^{4}.
 
-By replacing the NAs, the mean changed from `r stepMean` to `r stepMean1`.  
-By replacing the NAs, the median changed from `r stepMedian` to `r stepMedian1`.
+By replacing the NAs, the mean changed from 1.076619\times 10^{4} to 1.076817\times 10^{4}.  
+By replacing the NAs, the median changed from 1.0765\times 10^{4} to 1.078918\times 10^{4}.
 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 ###Create new factor variable based on weekend/weekday levels
-```{r dayCat, echo = TRUE, warning = FALSE, results = "hide"}
+
+```r
 ##Bring in the weekday values
 dataAll$day <- weekdays(dataAll$date, abbreviate = FALSE)
 ##Classify each day as weekend or weekday
@@ -145,11 +155,12 @@ dataAll$dayCat <- ifelse(dataAll$day == "Sunday", "weekend",
 dataAll$dayCat <- as.factor(dataAll$dayCat)
 ```
 
-The new variable is called dayCat, which is of the type, `r class(dataAll$dayCat)`,
-and has levels: `r levels(dataAll$dayCat)`.
+The new variable is called dayCat, which is of the type, factor,
+and has levels: weekday, weekend.
 
 ###Create a panel plot of average steps per interval faceted by dayCat factor
-```{r dayCatPlot, echo = TRUE, warning = FALSE}
+
+```r
 ##Aggregate the average steps by interval and day category
 dataAllMean <- aggregate(steps ~ interval + dayCat, dataAll, mean, na.rm = TRUE)
 ##Specifically call out the ggplot2 library
@@ -166,6 +177,8 @@ g +
         guides(fill = guide_legend(title = "Day Type", title.position = "top")) +
         guides(colour=FALSE)
 ```
+
+![](PA1_template_files/figure-html/dayCatPlot-1.png) 
   
   The weekday values tend to show a spike in the early intervals, ~800 to 900,  
 which is quite a bit higher than the remainder of the intervals. The weekend has  
